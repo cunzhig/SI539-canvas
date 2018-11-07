@@ -1,0 +1,113 @@
+<html>
+    <script type="text/javascript">
+    var canvas, ctx, flag = false,
+        prevX = 0,
+        currX = 0,
+        prevY = 0,
+        currY = 0,
+        dot_flag = false;
+
+    var color = "blue",
+        pensize = 21;
+    
+    function init() {
+        canvas = document.getElementById('can');
+        ctx = canvas.getContext("2d");
+        w = canvas.width;
+        h = canvas.height;
+        document.body.onkeyup = function(e){
+            //clear the canvas
+            if(e.keyCode == 32){
+                ctx.clearRect(0, 0, w, h);
+                flag = false;
+            }
+            //pen size larger
+            if(e.keyCode == 38){
+                pensize += 10;
+            }
+            //pen size smaller
+            if(e.keyCode == 40){
+                pensize -= 10;
+                if (pensize < 0){
+                    pensize = 1;
+                }
+            }
+            //change pen color
+            if(e.keyCode == 66){
+                color = "blue";
+            }
+            if(e.keyCode == 71){
+                color = "green";
+            }
+            if(e.keyCode == 82){
+                color = "red";
+            }
+            if(e.keyCode == 89){
+                color = "yellow";
+            } 
+
+        }
+        
+        //draw
+        canvas.addEventListener("mousemove", function (e) {
+            drawOnCanvas('move', e)
+        }, false);
+        canvas.addEventListener("mousedown", function (e) {
+            drawOnCanvas('down', e)
+        }, false);
+        canvas.addEventListener("mouseout", function (e) {
+            drawOnCanvas('out', e)
+        }, false);
+    }
+
+    
+    function drawOnCanvas(res, e) {
+        if (res == 'down') {
+            prevX = currX;
+            prevY = currY;
+            currX = e.clientX - canvas.offsetLeft;
+            currY = e.clientY - canvas.offsetTop;
+    
+            flag = true;
+            dot_flag = true;
+            if (dot_flag) {
+                ctx.beginPath();
+                ctx.arc(currX, currY, pensize/2, 2*Math.PI,false)
+                ctx.fillStyle = color;
+                ctx.fill();  
+                ctx.closePath();
+                dot_flag = false;
+            }
+        }
+        if (res == "out") {
+            flag = false;
+        }
+        if (res == 'move') {
+            if (flag) {
+                prevX = currX;
+                prevY = currY;
+                currX = e.clientX - canvas.offsetLeft;
+                currY = e.clientY - canvas.offsetTop;
+                ctx.beginPath();
+                ctx.arc(currX, currY, pensize/2, 2*Math.PI,false)
+                ctx.fillStyle = color;
+                ctx.fill();  
+                ctx.closePath();
+            }
+        }
+    }
+    </script>
+    <body onload="init()">
+        <canvas id="can" width="800" height="500" style="border:2px solid;"></canvas>
+        <p>Move the cursor inside the 800x500 canvas to move a colored pen.<br/>
+            Additional controls are:<br/>
+            &nbsp&nbsp"b" - change pen color to blue<br/>
+            &nbsp&nbsp"g" - change pen color to green<br/>
+            &nbsp&nbsp"r" - change pen color to red<br/>
+            &nbsp&nbsp"y" - change pen color to yellow<br/>
+            &nbsp&nbsp"up arrow" - make pen size larger<br/>
+            &nbsp&nbsp"down arrow" - make pen size smaller<br/>
+            &nbsp&nbsp"space bar" - clear the canvas (other than the current pen tip)
+        </p>
+    </body>
+    </html>
